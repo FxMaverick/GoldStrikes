@@ -1,19 +1,19 @@
 # GoldStrikes
 
-GoldStrikes is a data processing tool designed to extract structural information from options chains (Barchart-compatible).
+GoldStrikes is a Python tool that processes options chain CSV data (Barchart-compatible) to extract key structural metrics for trading.
 
-It converts raw CSV data into a simplified dataset containing key metrics used for market structure analysis.
+The output is optimized for direct use in **MetaTrader 5 (MQL5)**.
 
 ---
 
 ## ⚙️ What it does
 
-* Parses options chain data (calls and puts)
+* Parses raw options chain data (calls and puts)
 * Computes:
 
   * **Total Exposure** (Open Interest × Premium)
   * **Dominance Log** (call vs put imbalance)
-* Outputs a clean dataset ready for visualization or trading systems
+* Exports a clean **CSV dataset ready for MT5**
 
 ---
 
@@ -21,18 +21,41 @@ It converts raw CSV data into a simplified dataset containing key metrics used f
 
 CSV file containing options data with:
 
-* Strike (e.g. 4,320.00C / 4,320.00P)
+* Strike (e.g. `4,320.00C`, `4,320.00P`)
 * Open Interest
 * Premium
 
 ---
 
-## 📤 Output
+## 📤 Output (MT5-ready)
 
-Structured dataset:
+```text
+Strike,Total_Exposure,Dominance_Log
+4400.00,114419200,2.27
+4350.00,18076500,2.41
+4320.00,441070,-3.55
+```
 
-| Strike | Total_Exposure | Dominance_Log |
-| ------ | -------------- | ------------- |
+### Format rules
+
+* Comma-separated (`,`)
+* Dot decimals (`.`)
+* No thousands separators
+* Sorted by **Strike (descending)**
+
+---
+
+## 🚀 Usage
+
+```bash
+python goldstrikes.py input.csv
+```
+
+Optional output name:
+
+```bash
+python goldstrikes.py input.csv GoldStrikes.csv
+```
 
 ---
 
@@ -52,20 +75,11 @@ Measures directional imbalance:
 
 ---
 
-## 🔄 Typical Workflow
-
-1. Upload CSV
-2. Process data
-3. Export structured dataset
-4. Use in trading platforms (e.g. MetaTrader)
-
----
-
 ## 🎯 Use Cases
 
 * Key level detection
-* Market regime analysis
-* Quantitative trading tools
+* Market structure analysis
+* Integration with MetaTrader indicators (MQL5)
 
 ---
 
