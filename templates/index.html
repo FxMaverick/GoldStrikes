@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>GoldStrikes</title>
+
     <style>
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            background: #0f172a;
+            background: linear-gradient(135deg, #0f172a, #020617);
             color: #e2e8f0;
             display: flex;
             justify-content: center;
@@ -16,47 +18,89 @@
 
         .container {
             background: #1e293b;
-            padding: 30px;
-            border-radius: 12px;
+            padding: 40px;
+            border-radius: 14px;
             text-align: center;
-            width: 350px;
+            width: 380px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         h1 {
-            margin-bottom: 20px;
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 25px;
+            margin-top: 8px;
+            line-height: 1.4;
         }
 
         input[type="file"] {
             margin-bottom: 20px;
+            width: 100%;
+            color: #e2e8f0;
         }
 
         button {
             background: #38bdf8;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
+            width: 100%;
             color: #0f172a;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
+            transition: 0.2s ease;
         }
 
         button:hover {
             background: #0ea5e9;
         }
+
+        #status {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 11px;
+            color: #64748b;
+        }
     </style>
 </head>
+
 <body>
 
 <div class="container">
+
     <h1>GoldStrikes</h1>
+
+        <div class="subtitle">
+            Process gold options data to extract<br>
+            key exposure levels for MetaTrader 5
+            <br><br>
+            <span style="font-size:12px; color:#64748b;">
+                Used by MT5 algorithm to detect key liquidity levels
+            </span>
+        </div>
 
     <form id="uploadForm">
         <input type="file" id="fileInput" name="file" accept=".csv" required>
-        <br>
-        <button type="submit">Process</button>
+        <button type="submit">Process Data</button>
     </form>
 
     <p id="status"></p>
+
+    <div class="footer">
+        Barchart CSV → Structured MT5 dataset
+    </div>
+
 </div>
 
 <script>
@@ -89,7 +133,6 @@ document.getElementById("uploadForm").addEventListener("submit", async function(
 
         const blob = await response.blob();
 
-        // Descargar automáticamente
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -98,10 +141,10 @@ document.getElementById("uploadForm").addEventListener("submit", async function(
         a.click();
         a.remove();
 
-        status.textContent = "Done.";
+        status.textContent = "Download ready.";
 
     } catch (err) {
-        status.textContent = "Error connecting to server.";
+        status.textContent = "Connection error.";
     }
 });
 </script>
