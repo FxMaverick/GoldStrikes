@@ -73,36 +73,40 @@ def to_csv_bytes(df):
 # =========================
 # WEB (Flask minimal)
 # =========================
+from flask import Flask, request, send_file, render_template
+import io
+
 app = Flask(__name__)
 
 
 @app.route("/")
 def home():
-    return """
-    <h2>GoldStrikes</h2>
-    <form action="/process" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".csv" required>
-        <button type="submit">Process</button>
-    </form>
-    """
+    return render_template("index.html")
 
 
 @app.route("/process", methods=["POST"])
 def process():
-    file = request.files["file"]
+    file = request.files.get("file")
 
-    df = process_file(file)
+    if not file:
+        return "No file uploaded", 400
 
-    output = io.StringIO()
-    df.to_csv(output, index=False)
-    output.seek(0)
+    try:
+        df = process_file(file)
 
-    return send_file(
-        io.BytesIO(output.getvalue().encode()),
-        mimetype="text/csv",
-        as_attachment=True,
-        download_name="GoldStrikes.csv"
-    )
+        output = io.StringIO()
+        df.to_csv(output, index=False)
+        output.seek(0)
+
+        return send_file(
+            io.BytesIO(output.getvalue().encode()),
+            mimetype="text/csv",
+            as_attachment=True,
+            download_name="GoldStrikes.csv"
+        )
+
+    except Exception as e:
+        return f"Processing error: {str(e)}", 500
 
 
 # =========================
