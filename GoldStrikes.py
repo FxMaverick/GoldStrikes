@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+from flask import Flask, request, send_file
+import io
 
 
 # =========================
@@ -66,3 +68,45 @@ def process_file(input_source):
 # =========================
 def to_csv_bytes(df):
     return df.to_csv(index=False).encode('utf-8')
+
+
+# =========================
+# WEB (Flask minimal)
+# =========================
+app = Flask(__name__)
+
+
+@app.route("/")
+def home():
+    return """
+    <h2>GoldStrikes</h2>
+    <form action="/process" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv" required>
+        <button type="submit">Process</button>
+    </form>
+    """
+
+
+@app.route("/process", methods=["POST"])
+def process():
+    file = request.files["file"]
+
+    df = process_file(file)
+
+    output = io.StringIO()
+    df.to_csv(output, index=False)
+    output.seek(0)
+
+    return send_file(
+        io.BytesIO(output.getvalue().encode()),
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name="GoldStrikes.csv"
+    )
+
+
+# =========================
+# RUN
+# =========================
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
