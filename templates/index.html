@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GoldStrikes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            width: 350px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: #38bdf8;
+            border: none;
+            padding: 10px 20px;
+            color: #0f172a;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>GoldStrikes</h1>
+
+    <form id="uploadForm">
+        <input type="file" id="fileInput" name="file" accept=".csv" required>
+        <br>
+        <button type="submit">Process</button>
+    </form>
+
+    <p id="status"></p>
+</div>
+
+<script>
+document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const fileInput = document.getElementById("fileInput");
+    const status = document.getElementById("status");
+
+    if (!fileInput.files.length) {
+        status.textContent = "Please select a file.";
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+
+    status.textContent = "Processing...";
+
+    try {
+        const response = await fetch("/process", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            status.textContent = "Error processing file.";
+            return;
+        }
+
+        const blob = await response.blob();
+
+        // Descargar automáticamente
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "GoldStrikes.csv";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        status.textContent = "Done.";
+
+    } catch (err) {
+        status.textContent = "Error connecting to server.";
+    }
+});
+</script>
+
+</body>
+</html>
